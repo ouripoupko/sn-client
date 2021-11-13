@@ -1,0 +1,9 @@
+.two-sides {
+  display: flex;
+  app-lists {
+    //background: blue;
+  }
+  app-posts {
+    padding: 0 15%;
+  }
+}
