@@ -13,6 +13,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 import { PostsComponent } from './feed/posts/posts.component';
 import { ListsComponent } from './feed/lists/lists.component';
@@ -39,6 +40,7 @@ import { PopupComponent } from './feed/posts/create/popup/popup.component';
     MatCardModule,
     MatInputModule,
     MatDialogModule,
+    MatButtonModule,
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
