@@ -1,6 +1,1 @@
-<form class="example-form">
-  <mat-form-field class="example-full-width" (click)="openDialog()" appearance="fill">
-    <mat-label>What's on your thoughts?</mat-label>
-    <input matInput autocomplete="off">
-  </mat-form-field>
-</form>
+<div class="create-post" (click)="openDialog()">{{postText || "What's on your thoughts?"}}</div>
