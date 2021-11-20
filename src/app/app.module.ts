@@ -15,6 +15,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatTabsModule } from '@angular/material/tabs';
 
 import { PostsComponent } from './feed/posts/posts.component';
 import { ListsComponent } from './feed/lists/lists.component';
@@ -22,6 +23,10 @@ import { HeaderComponent } from './feed/header/header.component';
 import { CreateComponent } from './feed/posts/create/create.component';
 import { DisplayComponent } from './feed/posts/display/display.component';
 import { PopupComponent } from './feed/posts/create/popup/popup.component';
+import { FriendsListComponent } from './feed/lists/components/friends-list/friends-list.component';
+import { GroupListComponent } from './feed/lists/components/group-list/group-list.component';
+import { MyFriendsComponent } from './feed/lists/components/friends-list/components/my-friends/my-friends.component';
+import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popup/add-friend-popup.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +38,11 @@ import { PopupComponent } from './feed/posts/create/popup/popup.component';
     HeaderComponent,
     CreateComponent,
     DisplayComponent,
-    PopupComponent
+    PopupComponent,
+    FriendsListComponent,
+    GroupListComponent,
+    MyFriendsComponent,
+    AddFriendPopupComponent
   ],
   imports: [
     MatStepperModule,
@@ -42,6 +51,7 @@ import { PopupComponent } from './feed/posts/create/popup/popup.component';
     MatInputModule,
     MatDialogModule,
     MatButtonModule,
+    MatTabsModule,
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,

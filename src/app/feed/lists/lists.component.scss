@@ -1,0 +1,11 @@
+.lists {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 60px);
+    app-friends-list, app-group-list {
+        height: calc((100% - 70px) / 2);
+    }
+    .add-friend {
+        height: 70px;
+    }
+}
