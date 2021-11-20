@@ -4,7 +4,13 @@
     </div>
     <form class="post-form" [formGroup]="postForm">
         <mat-form-field appearance="fill" class="text">
-            <textarea matInput placeholder="What's on your thoughts?" rows="11" formControlName="text"></textarea>
+            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="text">
+            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text1"></textarea>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="text">
+            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text2"></textarea>
         </mat-form-field>
         <button mat-flat-button type="button" color="primary" class="submit" (click)="submitForm()">Create</button>
     </form>

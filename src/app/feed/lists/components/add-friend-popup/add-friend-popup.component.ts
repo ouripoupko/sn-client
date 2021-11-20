@@ -15,6 +15,12 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
   get text() {
     return this.postForm.controls.text.value;
   }
+  get text1() {
+    return this.postForm.controls.text1.value;
+  }
+  get text2() {
+    return this.postForm.controls.text2.value;
+  }
   subs: Subscription[] = [];
 
   constructor(private fb: FormBuilder,
@@ -25,7 +31,9 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.postForm = this.fb.group({
-      text: [this.data?.initialText || '', Validators.required]
+      text: [this.data?.initialText || '', Validators.required],
+      text1: [this.data?.initialText || '', Validators.required],
+      text2: [this.data?.initialText || '', Validators.required]
     });
     this.dialogRef.disableClose = true;//disable default close operation
     this.subs.push(
@@ -47,6 +55,6 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
   }
 
   post() {
-    this.personService.createPost(this.text);
+    this.personService.createPost(this.text + this.text1 + this.text2);
   }
 }
