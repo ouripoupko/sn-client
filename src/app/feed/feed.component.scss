@@ -7,5 +7,7 @@
   app-posts {
     padding: 0 5%;
     width: 70%;
+    max-height: calc(100vh - 60px);
+    overflow: auto;
   }
 }

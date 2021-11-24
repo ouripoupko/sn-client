@@ -1,0 +1,8 @@
+<mat-list>
+    <mat-list-item *ngFor="let friend of friends">
+        {{friend.name}}
+        <button mat-icon-button (click)="addFriend()">
+            <mat-icon>add_circle_outline</mat-icon>
+        </button>
+    </mat-list-item>
+</mat-list>

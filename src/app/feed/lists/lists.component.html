@@ -1,6 +1,7 @@
 <div class="lists">
-    <div class="add-friend">
-        <button mat-raised-button (click)="openDialog()">Add Friend</button>
+    <div class="buttons-wrapper">
+        <button mat-raised-button (click)="openDialog(true)">Add Friend</button>
+        <button mat-raised-button (click)="openDialog(false)">Add Group</button>
     </div>
     <app-friends-list></app-friends-list>
     <app-group-list></app-group-list>

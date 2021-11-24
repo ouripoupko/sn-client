@@ -16,6 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
 
 import { PostsComponent } from './feed/posts/posts.component';
 import { ListsComponent } from './feed/lists/lists.component';
@@ -27,6 +28,10 @@ import { FriendsListComponent } from './feed/lists/components/friends-list/frien
 import { GroupListComponent } from './feed/lists/components/group-list/group-list.component';
 import { MyFriendsComponent } from './feed/lists/components/friends-list/components/my-friends/my-friends.component';
 import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popup/add-friend-popup.component';
+import { PendingFriendsComponent } from './feed/lists/components/friends-list/components/pending-friends/pending-friends.component';
+import { FriendRequestsComponent } from './feed/lists/components/friends-list/components/friend-requests/friend-requests.component';
+import { FollowedFriendsComponent } from './feed/lists/components/friends-list/components/followed-friends/followed-friends.component';
+import { AddGroupPopupComponent } from './feed/lists/components/add-group-popup/add-group-popup.component';
 
 @NgModule({
   declarations: [
@@ -42,7 +47,11 @@ import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popu
     FriendsListComponent,
     GroupListComponent,
     MyFriendsComponent,
-    AddFriendPopupComponent
+    AddFriendPopupComponent,
+    PendingFriendsComponent,
+    FriendRequestsComponent,
+    FollowedFriendsComponent,
+    AddGroupPopupComponent
   ],
   imports: [
     MatStepperModule,
@@ -52,6 +61,7 @@ import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popu
     MatDialogModule,
     MatButtonModule,
     MatTabsModule,
+    MatIconModule,
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,
