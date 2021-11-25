@@ -3,6 +3,10 @@
   flex-direction: column;
   flex-wrap: wrap;
 
+  mat-card {
+    margin-bottom: 10px;
+  }
+
   .post-text {
     white-space: pre-wrap;
   }

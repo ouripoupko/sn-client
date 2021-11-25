@@ -14,4 +14,7 @@
             margin-right: 10px;
         }
     }
+    ::ng-deep .mat-list-item-content {
+        justify-content: space-between;
+    }
 }

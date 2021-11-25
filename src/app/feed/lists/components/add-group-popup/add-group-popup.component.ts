@@ -11,15 +11,15 @@ import { PersonService } from 'src/app/person.service';
 })
 export class AddGroupPopupComponent implements OnInit, OnDestroy {
 
-  postForm: FormGroup;
+  groupForm: FormGroup;
   get text() {
-    return this.postForm.controls.text.value;
+    return this.groupForm.controls.text.value;
   }
   get text1() {
-    return this.postForm.controls.text1.value;
+    return this.groupForm.controls.text1.value;
   }
   get text2() {
-    return this.postForm.controls.text2.value;
+    return this.groupForm.controls.text2.value;
   }
   subs: Subscription[] = [];
 
@@ -30,10 +30,10 @@ export class AddGroupPopupComponent implements OnInit, OnDestroy {
     }
 
   ngOnInit(): void {
-    this.postForm = this.fb.group({
-      text: [this.data?.initialText || '', Validators.required],
-      text1: [this.data?.initialText || '', Validators.required],
-      text2: [this.data?.initialText || '', Validators.required]
+    this.groupForm = this.fb.group({
+      text: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
+      text1: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
+      text2: [this.data?.initialText || '', Validators.required]//todo: DAD, Here you can defaul value!
     });
     this.dialogRef.disableClose = true;//disable default close operation
     this.subs.push(
@@ -44,7 +44,7 @@ export class AddGroupPopupComponent implements OnInit, OnDestroy {
   }
 
   submitForm() {
-    if (this.postForm.valid) {
+    if (this.groupForm.valid) {
       this.post();
       this.dialogRef.close();
     }

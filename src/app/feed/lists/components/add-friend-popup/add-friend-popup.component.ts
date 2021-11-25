@@ -12,15 +12,15 @@ import { PersonService } from 'src/app/person.service';
 export class AddFriendPopupComponent implements OnInit, OnDestroy {
 
   postForm: FormGroup;
-  get text() {
-    return this.postForm.controls.text.value;
+  get serverAdd() {
+    return this.postForm.controls.serverAdd.value;
   }
-  get text1() {
-    return this.postForm.controls.text1.value;
+  get friendName() {
+    return this.postForm.controls.name.value;
   }
-  get text2() {
-    return this.postForm.controls.text2.value;
-  }
+  // get text2() {
+  //   return this.postForm.controls.text2.value;
+  // }
   subs: Subscription[] = [];
 
   constructor(private fb: FormBuilder,
@@ -31,21 +31,21 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.postForm = this.fb.group({
-      text: [this.data?.initialText || '', Validators.required],
-      text1: [this.data?.initialText || '', Validators.required],
-      text2: [this.data?.initialText || '', Validators.required]
+      serverAdd: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
+      name: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
+      text2: [this.data?.initialText || '', Validators.required]//todo: DAD, Here you can defaul value!
     });
     this.dialogRef.disableClose = true;//disable default close operation
     this.subs.push(
       this.dialogRef.backdropClick().subscribe(result => {
-        this.dialogRef.close(this.text);
+        this.dialogRef.close(this.serverAdd);
       })
     );
   }
 
-  submitForm() {
+  submitForm(isAdd: boolean) {
     if (this.postForm.valid) {
-      this.post();
+      this.post(isAdd);
       this.dialogRef.close();
     }
   }
@@ -54,7 +54,10 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
     this.subs.forEach(s => s.unsubscribe());
   }
 
-  post() {
-    this.personService.createPost(this.text + this.text1 + this.text2);
+  post(isAdd: boolean) {
+    // + this.text2
+    isAdd ? 
+      this.personService.createPost(this.serverAdd + ' ' + this.friendName) :
+      this.personService.createPost(this.serverAdd + ' ' + this.friendName);//todo: change this to add and follow methods
   }
 }

@@ -2,15 +2,21 @@
     <div class="header">
         <h1>Add A Group</h1>
     </div>
-    <form class="post-form" [formGroup]="postForm">
+    <form class="post-form" [formGroup]="groupForm">
         <mat-form-field appearance="fill" class="text">
-            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text"></textarea>
+            <!-- <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text"></textarea> -->
+            <mat-label>group field </mat-label>
+            <input matInput placeholder="Ex. 200.10...." formControlName="text">
         </mat-form-field>
         <mat-form-field appearance="fill" class="text">
-            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text1"></textarea>
+            <!-- <textarea matInput placeholder="What's on your thoughts?" rows="3"></textarea> -->
+            <mat-label>group field 1</mat-label>
+            <input matInput placeholder="Ex. 200.10...." formControlName="text1">
         </mat-form-field>
         <mat-form-field appearance="fill" class="text">
-            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text2"></textarea>
+            <!-- <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text2"></textarea> -->
+            <mat-label>group field 2</mat-label>
+            <input matInput placeholder="Ex. 200.10...." formControlName="text2">
         </mat-form-field>
         <div class="submit-container">
             <button mat-flat-button type="button" color="primary" class="submit" (click)="submitForm()">Add</button>
