@@ -4,20 +4,17 @@
     </div>
     <form class="post-form" [formGroup]="postForm">
         <mat-form-field appearance="fill" class="text">
-            <!-- <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text"></textarea> -->
             <mat-label>server address</mat-label>
             <input matInput placeholder="Ex. 200.10...." formControlName="serverAdd">
         </mat-form-field>
         <mat-form-field appearance="fill" class="text">
-            <!-- <textarea matInput placeholder="What's on your thoughts?" rows="3"></textarea> -->
             <mat-label>friend name</mat-label>
             <input matInput placeholder="Ex. Yoni" formControlName="name">
         </mat-form-field>
-        <!-- <mat-form-field appearance="fill" class="text">
-            <textarea matInput placeholder="What's on your thoughts?" rows="3" formControlName="text2"></textarea>
-            <mat-label>friend field 2</mat-label>
-            <input matInput placeholder="Ex. 200.10...." formControlName="text2">
-        </mat-form-field> -->
+        <mat-form-field appearance="fill" class="text">
+            <mat-label>contract name</mat-label>
+            <input matInput placeholder="Ex. sn01" formControlName="contract">
+        </mat-form-field>
         <div class="submit-container">
             <button mat-flat-button type="button" color="primary" class="submit" (click)="submitForm(true)">Add</button>
             <button mat-flat-button type="button" color="primary" class="submit" (click)="submitForm(false)">Follow</button>

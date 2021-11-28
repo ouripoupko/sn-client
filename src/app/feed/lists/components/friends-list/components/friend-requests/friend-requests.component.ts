@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IFriend } from '../../models/friend';
+import { PersonService } from '../../../../../../person.service'
 
 @Component({
   selector: 'app-friend-requests',
@@ -10,7 +11,7 @@ export class FriendRequestsComponent implements OnInit {
 
   friends: IFriend[];
 
-  constructor() { }
+  constructor(public personSvc: PersonService) { }
 
   ngOnInit(): void {
     this.friends = this.getFriends();

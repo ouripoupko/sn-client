@@ -32,6 +32,13 @@ export class ContractService {
       );
   }
 
+  addContract(server: string, agent: string, name: string, contract: Contract): Observable<Contract> {
+    return this.http.post<Contract>(`${server}ibc/app/${agent}/${name}`, contract, this.httpOptions).pipe(
+      tap((newContract: Contract) => console.log(`added contract with name=${newContract.name}`)),
+      catchError(this.handleError<Contract>('addContract'))
+    );
+  }
+
   listen(server: string, identity: string, contract: string): EventSource {
     return new EventSource(`${server}stream/${identity}/${contract}`);
   }

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IFriend } from '../../models/friend';
+import { PersonService } from '../../../../../../person.service'
 
 @Component({
   selector: 'app-my-friends',
@@ -10,9 +11,10 @@ export class MyFriendsComponent implements OnInit {
 
   friends: IFriend[];
 
-  constructor() { }
+  constructor(public personSvc: PersonService) { }
 
   ngOnInit(): void {
+    console.log(this.personSvc.friends);
     this.friends = this.getFriends();
   }
 
@@ -21,7 +23,7 @@ export class MyFriendsComponent implements OnInit {
   }
 
   loadFriendPosts() {
-    
+
   }
 
 }

@@ -15,12 +15,12 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
   get serverAdd() {
     return this.postForm.controls.serverAdd.value;
   }
-  get friendName() {
+  get name() {
     return this.postForm.controls.name.value;
   }
-  // get text2() {
-  //   return this.postForm.controls.text2.value;
-  // }
+  get contract() {
+    return this.postForm.controls.contract.value;
+  }
   subs: Subscription[] = [];
 
   constructor(private fb: FormBuilder,
@@ -31,9 +31,9 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.postForm = this.fb.group({
-      serverAdd: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
+      serverAdd: [this.data?.initialText || 'http://localhost:5001/', Validators.required],
       name: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
-      text2: [this.data?.initialText || '', Validators.required]//todo: DAD, Here you can defaul value!
+      contract: [this.data?.initialText || '', Validators.required]//todo: DAD, Here you can defaul value!
     });
     this.dialogRef.disableClose = true;//disable default close operation
     this.subs.push(
@@ -55,9 +55,8 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
   }
 
   post(isAdd: boolean) {
-    // + this.text2
-    isAdd ? 
-      this.personService.createPost(this.serverAdd + ' ' + this.friendName) :
-      this.personService.createPost(this.serverAdd + ' ' + this.friendName);//todo: change this to add and follow methods
+    isAdd ?
+      this.personService.addFriendship(this.serverAdd, this.name, this.contract) :
+      this.personService.addFriendship(this.serverAdd, this.name, this.contract);
   }
 }
