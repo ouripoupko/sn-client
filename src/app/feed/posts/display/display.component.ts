@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { PersonService } from '../../../person.service';
 
 // export interface Post {
@@ -15,21 +14,14 @@ import { PersonService } from '../../../person.service';
 })
 export class DisplayComponent implements OnInit {
 
-  private personSubscription: Subscription;
-  posts;
-
   constructor(
-    private personService: PersonService
+    public personService: PersonService
   ) { }
 
   ngOnInit(): void {
-    this.personSubscription = this.personService.notifier.subscribe(() => {
-      this.initialize();
-    });
   }
 
   initialize() {
-    this.posts = this.personService.posts;
   }
 
 }

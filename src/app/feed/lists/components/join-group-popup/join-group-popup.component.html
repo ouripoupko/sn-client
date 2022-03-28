@@ -1,8 +1,8 @@
 <div class="modal">
     <div class="header">
-        <h1>Add A Friend</h1>
+        <h1>Join A Group</h1>
     </div>
-    <form class="post-form" [formGroup]="postForm">
+    <form class="post-form" [formGroup]="groupForm">
         <mat-form-field appearance="fill" class="text">
             <mat-label>server address</mat-label>
             <input matInput placeholder="Ex. 200.10...." formControlName="serverAdd">
@@ -13,10 +13,10 @@
         </mat-form-field>
         <mat-form-field appearance="fill" class="text">
             <mat-label>contract name</mat-label>
-            <input matInput placeholder="Ex. sn01" formControlName="contract">
+            <input matInput placeholder="Ex. gp01" formControlName="contract">
         </mat-form-field>
         <div class="submit-container">
-            <button mat-flat-button type="button" color="primary" class="submit" (click)="submitForm()">Add</button>
+            <button mat-flat-button type="button" color="primary" class="submit" (click)="submitForm()">Join</button>
         </div>
     </form>
 </div>

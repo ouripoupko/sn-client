@@ -28,10 +28,9 @@ import { FriendsListComponent } from './feed/lists/components/friends-list/frien
 import { GroupListComponent } from './feed/lists/components/group-list/group-list.component';
 import { MyFriendsComponent } from './feed/lists/components/friends-list/components/my-friends/my-friends.component';
 import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popup/add-friend-popup.component';
-import { PendingFriendsComponent } from './feed/lists/components/friends-list/components/pending-friends/pending-friends.component';
 import { FriendRequestsComponent } from './feed/lists/components/friends-list/components/friend-requests/friend-requests.component';
-import { FollowedFriendsComponent } from './feed/lists/components/friends-list/components/followed-friends/followed-friends.component';
-import { AddGroupPopupComponent } from './feed/lists/components/add-group-popup/add-group-popup.component';
+import { JoinGroupPopupComponent } from './feed/lists/components/join-group-popup/join-group-popup.component';
+import { CreateGroupPopupComponent } from './feed/lists/components/create-group-popup/create-group-popup.component';
 
 @NgModule({
   declarations: [
@@ -48,10 +47,9 @@ import { AddGroupPopupComponent } from './feed/lists/components/add-group-popup/
     GroupListComponent,
     MyFriendsComponent,
     AddFriendPopupComponent,
-    PendingFriendsComponent,
     FriendRequestsComponent,
-    FollowedFriendsComponent,
-    AddGroupPopupComponent
+    JoinGroupPopupComponent,
+    CreateGroupPopupComponent
   ],
   imports: [
     MatStepperModule,

@@ -39,6 +39,13 @@ export class ContractService {
     );
   }
 
+  connect(server: string, agent: string, address: string, pid: string, name: string): Observable<any> {
+    return this.http.post(`${server}ibc/app/${agent}/${name}`, { address: address, pid: pid }, this.httpOptions).pipe(
+      tap(_ => console.log(`connected to ${address} with contract ${name}`)),
+      catchError(this.handleError<any>('connect'))
+    );
+  }
+
   listen(server: string, identity: string, contract: string): EventSource {
     return new EventSource(`${server}stream/${identity}/${contract}`);
   }

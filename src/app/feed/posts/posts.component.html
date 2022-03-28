@@ -1,2 +1,16 @@
-<app-create></app-create>
+<div *ngIf="personService.view == 'me'">
+  <h1>My feed</h1>
+  <app-create></app-create>
+</div>
+<div *ngIf="personService.view == 'friend'">
+  <h1>
+    {{personService.friends[personService.view_key]['agent']}}
+  </h1>
+</div>
+<div *ngIf="personService.view == 'group'">
+  <h1>
+    {{personService.groups[personService.view_key]['contract']}}
+  </h1>
+  <app-create></app-create>
+</div>
 <app-display></app-display>

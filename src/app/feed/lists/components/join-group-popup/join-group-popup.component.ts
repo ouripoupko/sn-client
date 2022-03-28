@@ -5,32 +5,32 @@ import { Subscription } from 'rxjs';
 import { PersonService } from 'src/app/person.service';
 
 @Component({
-  selector: 'app-add-friend-popup',
-  templateUrl: './add-friend-popup.component.html',
-  styleUrls: ['./add-friend-popup.component.scss']
+  selector: 'app-join-group-popup',
+  templateUrl: './join-group-popup.component.html',
+  styleUrls: ['./join-group-popup.component.scss']
 })
-export class AddFriendPopupComponent implements OnInit, OnDestroy {
+export class JoinGroupPopupComponent implements OnInit, OnDestroy {
 
-  postForm: FormGroup;
+  groupForm: FormGroup;
   get serverAdd() {
-    return this.postForm.controls.serverAdd.value;
+    return this.groupForm.controls.serverAdd.value;
   }
   get name() {
-    return this.postForm.controls.name.value;
+    return this.groupForm.controls.name.value;
   }
   get contract() {
-    return this.postForm.controls.contract.value;
+    return this.groupForm.controls.contract.value;
   }
   subs: Subscription[] = [];
 
   constructor(private fb: FormBuilder,
-    private dialogRef: MatDialogRef<AddFriendPopupComponent>,
+    private dialogRef: MatDialogRef<JoinGroupPopupComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private personService: PersonService) {
     }
 
   ngOnInit(): void {
-    this.postForm = this.fb.group({
+    this.groupForm = this.fb.group({
       serverAdd: [this.data?.initialText || 'http://localhost:5001/', Validators.required],
       name: [this.data?.initialText || '', Validators.required],//todo: DAD, Here you can defaul value!
       contract: [this.data?.initialText || '', Validators.required]//todo: DAD, Here you can defaul value!
@@ -44,7 +44,7 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
   }
 
   submitForm() {
-    if (this.postForm.valid) {
+    if (this.groupForm.valid) {
       this.post();
       this.dialogRef.close();
     }
@@ -55,6 +55,7 @@ export class AddFriendPopupComponent implements OnInit, OnDestroy {
   }
 
   post() {
-    this.personService.addFriendship(this.serverAdd, this.name, this.contract);
+    this.personService.joinGroup(this.serverAdd, this.name, this.contract);
   }
 }
+

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { PersonService } from '../../person.service';
 
 
 @Component({
@@ -11,7 +11,9 @@ export class PostsComponent implements OnInit {
 
 
 
-  constructor() { }
+  constructor(
+    public personService: PersonService
+  ) { }
 
   ngOnInit(): void {
   }

@@ -1,8 +1,14 @@
+<h1 class="profile-name" (click)="openFeed()">
+  {{personService.agent}}
+</h1>
 <div class="lists">
     <div class="buttons-wrapper">
-        <button mat-raised-button (click)="openDialog(true)">Add Friend</button>
-        <button mat-raised-button (click)="openDialog(false)">Add Group</button>
+        <button mat-raised-button (click)="openDialog(DialogsEnum.ADD_FRIEND)">Add Friend</button>
     </div>
     <app-friends-list></app-friends-list>
+    <div class="buttons-wrapper">
+        <button mat-raised-button (click)="openDialog(DialogsEnum.CREATE_GROUP)">Create Group</button>
+        <button mat-raised-button (click)="openDialog(DialogsEnum.JOIN_GROUP)">Join Group</button>
+    </div>
     <app-group-list></app-group-list>
 </div>

@@ -14,11 +14,9 @@ export class FriendRequestsComponent implements OnInit {
   constructor(public personSvc: PersonService) { }
 
   ngOnInit(): void {
-    this.friends = this.getFriends();
   }
 
-  getFriends() {
-    return [{name: 'haf'}, {name: 'ri'}, {name: 'ta'}];
+  approve(key) {
+    this.personSvc.approveFriendship(key);
   }
-
 }

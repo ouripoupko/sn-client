@@ -23,10 +23,9 @@ export class FeedComponent implements OnInit {
     this.personService.setScope(server, agent, contract);
     this.personService.getUpdates();
     this.contractService.listen(server, agent, contract).addEventListener('message', message => {
+      console.log('update from feed');
       if(message.data=="True") {
         this.personService.getUpdates();
-      } else {
-        console.log("False");
       }
     });
   }
