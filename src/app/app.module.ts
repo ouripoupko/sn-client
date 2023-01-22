@@ -17,6 +17,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSelectModule } from '@angular/material/select';
 
 import { PostsComponent } from './feed/posts/posts.component';
 import { ListsComponent } from './feed/lists/lists.component';
@@ -31,6 +32,7 @@ import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popu
 import { FriendRequestsComponent } from './feed/lists/components/friends-list/components/friend-requests/friend-requests.component';
 import { JoinGroupPopupComponent } from './feed/lists/components/join-group-popup/join-group-popup.component';
 import { CreateGroupPopupComponent } from './feed/lists/components/create-group-popup/create-group-popup.component';
+import { SetProfilePopupComponent } from './feed/lists/components/set-profile-popup/set-profile-popup.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,8 @@ import { CreateGroupPopupComponent } from './feed/lists/components/create-group-
     AddFriendPopupComponent,
     FriendRequestsComponent,
     JoinGroupPopupComponent,
-    CreateGroupPopupComponent
+    CreateGroupPopupComponent,
+    SetProfilePopupComponent
   ],
   imports: [
     MatStepperModule,
@@ -60,6 +63,7 @@ import { CreateGroupPopupComponent } from './feed/lists/components/create-group-
     MatButtonModule,
     MatTabsModule,
     MatIconModule,
+    MatSelectModule,
     HttpClientModule,
     BrowserModule,
     AppRoutingModule,

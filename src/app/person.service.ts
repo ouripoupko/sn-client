@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { filter } from 'rxjs/operators';
 import { ContractService } from './contract.service';
 import { Contract, Method } from './contract';
 
@@ -11,6 +12,7 @@ export class PersonService {
   agent: string;
   contract: string;
 
+  name: string;
   view = 'me';
   view_key = 0;
   posts = {};
@@ -29,6 +31,31 @@ export class PersonService {
     this.agent = agent;
     this.contract = contract;
     this.posts = this.all_posts;
+  }
+
+  getName() {
+    if(this.name) {
+      return this.name;
+    } else if(this.agent) {
+      if(this.agent.length < 20) {
+        return this.agent;
+      } else {
+        return this.agent.slice(0, 4) + '...' + this.agent.slice(-4)
+      }
+    } else {
+      return '';
+    }
+  }
+
+  getProfiles(): any {
+    return this.contractService.getContracts(this.server, this.agent, 'profile.py');
+  }
+
+  setProfile(profile): any {
+    const method = { name: 'register_profile',
+                     values: {'contract': profile}} as Method;
+    this.contractService.write(this.server, this.agent, this.contract, method)
+      .subscribe();
   }
 
   createPost(text): void {
@@ -183,6 +210,14 @@ class Group:
   }
 
   getUpdates() {
+    this.update('get_profile_contract').subscribe(contract_name => {
+      console.log('contract name', contract_name);
+      if(contract_name) {
+        const method = { name: 'get_value', values: {'key': 'first_name'}} as Method;
+        this.contractService.read(this.server, this.agent, contract_name, method)
+          .subscribe(value => {console.log('read name', value); this.name = value;});
+      }
+    });
     this.update('get_posts').subscribe(records => {
       Object.entries(records).forEach(
         ([post_key, record]) => {

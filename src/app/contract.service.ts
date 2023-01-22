@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
@@ -25,9 +25,20 @@ export class ContractService {
       );
   }
 
-  getContracts(server: string, identity: string): Observable<Contract[]> {
-    return this.http.get<Contract[]>(`${server}ibc/app/${identity}`).pipe(
+  getContracts(server: string, identity: string, desired: string): Observable<Contract[]> {
+    let params = new HttpParams().set('action', 'get_contracts');
+    return this.http.get<Contract[]>(`${server}ibc/app/${identity}`, {params: params}).pipe(
         tap(_ => console.log('fetched contracts')),
+        map((contracts: Contract[]) => {
+          console.log('filter contracts', contracts);
+          let refined: Contract[] = [];
+          for (var contract of contracts) {
+            if(contract.contract == desired) {
+              refined.push(contract);
+            }
+          }
+          return refined;
+        }),
         catchError(this.handleError<Contract[]>('getContracts', []))
       );
   }
@@ -52,16 +63,18 @@ export class ContractService {
 
   write(server: string, identity: string, contract: string, method: Method): Observable<any> {
     const url = `${server}ibc/app/${identity}/${contract}/${method.name}`;
-    return this.http.put<any>(url, method, this.httpOptions).pipe(
-//      tap((list: Collection) => console.log(list)),
+    let params = new HttpParams().set('action', 'contract_write');
+    return this.http.post<any>(url, method, {...this.httpOptions, params: params}).pipe(
+      tap(_ => console.log('wrote something')),
       catchError(this.handleError<any>(`write name=${name}`))
     );
   }
 
   read(server: string, identity: string, contract: string, method: Method): Observable<any> {
     const url = `${server}ibc/app/${identity}/${contract}/${method.name}`;
-    return this.http.post<any>(url, method, this.httpOptions).pipe(
-//      tap((list: Collection) => console.log(list)),
+    let params = new HttpParams().set('action', 'contract_read');
+    return this.http.put<any>(url, method, {...this.httpOptions, params: params}).pipe(
+      tap(_ => console.log('read something')),
       catchError(this.handleError<any>(`read name=${name}`))
     );
   }

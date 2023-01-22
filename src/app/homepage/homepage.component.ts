@@ -35,7 +35,7 @@ export class HomepageComponent implements OnInit {
   onIdentityChange(event, stepper) {
     this.contracts = null;
     this.agent = event.option.value;
-    this.contractService.getContracts(this.server, this.agent)
+    this.contractService.getContracts(this.server, this.agent, 'sn_person.py')
       .subscribe(contracts => {this.contracts = contracts; stepper.next();});
   }
 
