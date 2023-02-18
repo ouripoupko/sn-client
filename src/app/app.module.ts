@@ -32,7 +32,6 @@ import { AddFriendPopupComponent } from './feed/lists/components/add-friend-popu
 import { FriendRequestsComponent } from './feed/lists/components/friends-list/components/friend-requests/friend-requests.component';
 import { JoinGroupPopupComponent } from './feed/lists/components/join-group-popup/join-group-popup.component';
 import { CreateGroupPopupComponent } from './feed/lists/components/create-group-popup/create-group-popup.component';
-import { SetProfilePopupComponent } from './feed/lists/components/set-profile-popup/set-profile-popup.component';
 
 @NgModule({
   declarations: [
@@ -51,8 +50,7 @@ import { SetProfilePopupComponent } from './feed/lists/components/set-profile-po
     AddFriendPopupComponent,
     FriendRequestsComponent,
     JoinGroupPopupComponent,
-    CreateGroupPopupComponent,
-    SetProfilePopupComponent
+    CreateGroupPopupComponent
   ],
   imports: [
     MatStepperModule,

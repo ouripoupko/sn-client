@@ -33,29 +33,23 @@ export class PersonService {
     this.posts = this.all_posts;
   }
 
-  getName() {
-    if(this.name) {
-      return this.name;
-    } else if(this.agent) {
-      if(this.agent.length < 20) {
-        return this.agent;
+  getName(agent) {
+    if(agent == this.agent) {
+      if(this.name) {
+        return this.name;
+      } else if(this.agent) {
+        if(this.agent.length < 20) {
+          return this.agent;
+        } else {
+          return this.agent.slice(0, 4) + '...' + this.agent.slice(-4)
+        }
       } else {
-        return this.agent.slice(0, 4) + '...' + this.agent.slice(-4)
+        return '';
       }
-    } else {
-      return '';
     }
-  }
-
-  getProfiles(): any {
-    return this.contractService.getContracts(this.server, this.agent, 'profile.py');
-  }
-
-  setProfile(profile): any {
-    const method = { name: 'register_profile',
-                     values: {'contract': profile}} as Method;
-    this.contractService.write(this.server, this.agent, this.contract, method)
-      .subscribe();
+    else {
+      return agent.slice(0, 4) + '...' + agent.slice(-4)
+    }
   }
 
   createPost(text): void {
@@ -153,7 +147,7 @@ class Group:
     console.log('inside update friend posts');
     let partner_method = { name: 'get_posts', values: {} }as Method;
     this.contractService.read(this.friends[key].server, this.friends[key].agent,
-                              this.friends[key].profile_contract, partner_method)
+                              this.friends[key].wall_contract, partner_method)
       .subscribe(records => {
       console.log('received friends records');
       this.friends[key]['posts'] = {...records}
@@ -166,9 +160,9 @@ class Group:
         }
       );
 //       console.log('listen', this.friends[key]['server'],
-//                   this.friends[key]['agent'], this.friends[key]['profile_contract'])
+//                   this.friends[key]['agent'], this.friends[key]['wall_contract'])
 //       this.contractService.listen(this.friends[key]['server'],
-//                   this.friends[key]['agent'], this.friends[key]['profile_contract'])
+//                   this.friends[key]['agent'], this.friends[key]['wall_contract'])
 //         .addEventListener('message', message => {
 //         console.log('update from friend');
 //         if(message.data=="True") {
@@ -187,7 +181,11 @@ class Group:
       .subscribe(partner => {
       this.friends[key]['server'] = partner.server;
       this.friends[key]['agent'] = partner.agent;
-      this.friends[key]['profile_contract'] = partner.contract;
+      this.friends[key]['wall_contract'] = partner.contract;
+
+//      let profile_method = { name: method_name, values: {}} as Method;
+//    return this.contractService.read(this.server, this.agent, this.contract, method);
+
       console.log('will call update posts');
       this.updateFriendPosts(key);
     });

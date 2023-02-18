@@ -1,9 +1,6 @@
 <h1 class="profile-name" (click)="openFeed()">
-  {{personService.getName()}}
+  {{personService.getName(personService.agent)}}
 </h1>
-<div class="buttons-wrapper">
-    <button mat-raised-button (click)="openDialog(DialogsEnum.SET_PROFILE)">Set Profile</button>
-</div>
 
 <div class="lists">
     <div class="buttons-wrapper">

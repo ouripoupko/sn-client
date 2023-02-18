@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 import { AddFriendPopupComponent } from './components/add-friend-popup/add-friend-popup.component';
 import { CreateGroupPopupComponent } from './components/create-group-popup/create-group-popup.component';
 import { JoinGroupPopupComponent } from './components/join-group-popup/join-group-popup.component';
-import { SetProfilePopupComponent } from './components/set-profile-popup/set-profile-popup.component';
 import { PersonService } from '../../person.service';
 
 export enum Dialogs{
@@ -34,10 +33,7 @@ export class ListsComponent implements OnInit, OnDestroy {
 
   openDialog(type: Dialogs) {
     let dialogRef;
-    dialogRef = type == Dialogs.SET_PROFILE ?
-      this.dialog.open(SetProfilePopupComponent, {
-        width: '50vw'
-      }) : type == Dialogs.ADD_FRIEND ?
+    dialogRef = type == Dialogs.ADD_FRIEND ?
       this.dialog.open(AddFriendPopupComponent, {
         width: '50vw'
       }) : type == Dialogs.CREATE_GROUP ?
