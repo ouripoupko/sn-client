@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
 import { PopupComponent } from './popup/popup.component'
 
@@ -14,16 +14,16 @@ export class CreateComponent implements OnInit, OnDestroy {
   subs: Subscription[] = [];
 
   constructor(public dialog: MatDialog) { }
-  
+
   ngOnInit(): void {
   }
-  
+
   openDialog(): void {
     const dialogRef = this.dialog.open(PopupComponent, {
       width: '50vw',
       data: { initialText: this.postText }
     });
-    
+
     this.subs.push(
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
@@ -35,9 +35,8 @@ export class CreateComponent implements OnInit, OnDestroy {
       })
     );
   }
-    
+
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
   }
 }
-  
