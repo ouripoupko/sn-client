@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { filter } from 'rxjs/operators';
 import { ContractService } from './contract.service';
 import { Contract, Method } from './contract';
 
@@ -11,6 +10,7 @@ export class PersonService {
   server: string;
   agent: string;
   contract: string;
+  profile: string;
 
   name: string;
   view = 'me';
@@ -48,7 +48,11 @@ export class PersonService {
       }
     }
     else {
-      return agent.slice(0, 4) + '...' + agent.slice(-4)
+      if('name' in this.friends[agent]) {
+        return this.friends[agent]['name'];
+      } else {
+        return agent.slice(0, 4) + '...' + agent.slice(-4);
+      }
     }
   }
 
@@ -60,41 +64,9 @@ export class PersonService {
       .subscribe();
   }
 
-  addFriendship(his_server, his_name, his_contract): void {
-    console.log(his_server, his_name, his_contract);
-    let contract: Contract = {} as Contract;
-    contract.code = `
-class Friendship:
-
-  def __init__(self):
-    self.first = {'server': '${this.server}', 'agent': '${this.agent}', 'contract': '${this.contract}'}
-    self.second = {'server': '${his_server}', 'agent': '${his_name}', 'contract': '${his_contract}'}
-
-  def get_partner(self, my_server, my_agent, my_contract):
-    if self.first['server'] == my_server and self.first['agent'] == my_agent and self.first['contract'] == my_contract:
-      return self.second
-    elif self.second['server'] == my_server and self.second['agent'] == my_agent and self.second['contract'] == my_contract:
-      return self.first
-    else:
-      return {}
-`
-    contract.address = this.server;
-    contract.pid = this.agent;
-    let contract_name = 'sn_'+this.agent+'_'+his_name;
-    this.contractService.addContract(this.server, this.agent, contract_name, contract)
-      .subscribe(_ => {
-      const my_method = { name: 'befriend',
-                          values: {'friendship': contract_name}} as Method;
-      this.contractService.write(this.server, this.agent, this.contract, my_method).subscribe();
-      const his_method = { name: 'request',
-                       values: {'server': this.server, 'name': this.agent, 'contract': contract_name}} as Method;
-      this.contractService.write(his_server, his_name, his_contract, his_method).subscribe();
-    });
-  }
-
   approveFriendship(key) {
     let request = this.requests[key];
-    this.contractService.connect(this.server, this.agent, request.server, request.name, request.contract)
+    this.contractService.joinContract(this.server, this.agent, request.server, request.name, request.contract, '')
       .subscribe(_ => {
       const my_method = { name: 'befriend',
                           values: {'friendship': request.contract,
@@ -121,7 +93,7 @@ class Group:
 `
     contract.address = this.server;
     contract.pid = this.agent;
-    this.contractService.addContract(this.server, this.agent, name, contract)
+    this.contractService.addContract(this.server, this.agent, contract)
       .subscribe(_ => {
       const my_method = { name: 'add_group',
                           values: {'contract': name}} as Method;
@@ -130,7 +102,7 @@ class Group:
   }
 
   joinGroup(his_server, his_name, his_contract): void {
-    this.contractService.connect(this.server, this.agent, his_server, his_name, his_contract)
+    this.contractService.joinContract(this.server, this.agent, his_server, his_name, his_contract, '')
       .subscribe(_ => {
       const my_method = { name: 'add_group',
                           values: {'contract': his_contract}} as Method;
@@ -144,12 +116,15 @@ class Group:
   }
 
   updateFriendPosts(key) {
-    console.log('inside update friend posts');
-    let partner_method = { name: 'get_posts', values: {} }as Method;
+    let name_method = { name: 'get_value', values: {'key': 'first_name'}}as Method;
+    this.contractService.read(this.friends[key].server, this.friends[key].agent,
+                              this.friends[key].profile, name_method)
+      .subscribe(name => {this.friends[key].name = name});
+    let partner_method = { name: 'get_posts', values: {}, arguments: ['shlomo'] }as Method;
     this.contractService.read(this.friends[key].server, this.friends[key].agent,
                               this.friends[key].wall_contract, partner_method)
       .subscribe(records => {
-      console.log('received friends records');
+      console.log('posts:', records);
       this.friends[key]['posts'] = {...records}
       if(this.view == 'friend' && this.view_key == key) {
         this.posts = this.friends[key]['posts'];
@@ -173,21 +148,26 @@ class Group:
     });
   }
 
-  updateFriend(key) {
-    let method = { name: 'get_partner', values: {'my_server': this.server,
-                                                 'my_agent': this.agent,
-                                                 'my_contract': this.contract}} as Method;
-    this.contractService.read(this.server, this.agent, this.friends[key].contract, method)
-      .subscribe(partner => {
-      this.friends[key]['server'] = partner.server;
-      this.friends[key]['agent'] = partner.agent;
-      this.friends[key]['wall_contract'] = partner.contract;
-
-//      let profile_method = { name: method_name, values: {}} as Method;
-//    return this.contractService.read(this.server, this.agent, this.contract, method);
-
-      console.log('will call update posts');
-      this.updateFriendPosts(key);
+  updateFriend(contract) {
+    console.log('update friend:', contract);
+    let partners_method = { name: 'get_partners', values: {}} as Method;
+    this.contractService.read(this.server, this.agent, contract.id, partners_method)
+      .subscribe(partners => {
+      for(let partner of partners) {
+        if(partner.agent != this.agent) {
+          let wall_method = {name: 'get_wall', values: {'agent': partner.agent}} as Method;
+          this.contractService.read(this.server, this.agent, contract.id, wall_method).subscribe(wall => {
+            let key = partner.agent;
+            console.log('the partner:', partner, partner.address, wall);
+            this.friends[key] = {};
+            this.friends[key]['server'] = partner.address;
+            this.friends[key]['agent'] = partner.agent;
+            this.friends[key]['wall_contract'] = wall;
+            this.friends[key]['profile'] = partner.profile;
+            this.updateFriendPosts(key);
+          });
+        }
+      }
     });
   }
 
@@ -208,12 +188,14 @@ class Group:
   }
 
   getUpdates() {
-    this.update('get_profile_contract').subscribe(contract_name => {
-      console.log('contract name', contract_name);
-      if(contract_name) {
-        const method = { name: 'get_value', values: {'key': 'first_name'}} as Method;
-        this.contractService.read(this.server, this.agent, contract_name, method)
-          .subscribe(value => {console.log('read name', value); this.name = value;});
+    this.update('get_partners').subscribe(partners => {
+      for(let partner of partners) {
+        if(partner.agent == this.agent) {
+          this.profile = partner.profile;
+          const method = { name: 'get_value', values: {'key': 'first_name'}} as Method;
+          this.contractService.read(this.server, this.agent, this.profile, method)
+            .subscribe(value => {console.log('read name', value); this.name = value;});
+        }
       }
     });
     this.update('get_posts').subscribe(records => {
@@ -223,20 +205,12 @@ class Group:
         }
       );
     });
-    this.update('get_friends').subscribe(records => {
-      Object.entries(records).forEach(
-        ([friend_key, record]) => {
-          if(!(friend_key in this.friends)) {
-            console.log(friend_key);
-            this.friends[friend_key] = record;
-            this.updateFriend(friend_key);
-          }
+    this.contractService.getContracts(this.server, this.agent, 'sn_friendship.py')
+      .subscribe((contracts:Contract[]) => {
+        for(let contract of contracts) {
+          this.updateFriend(contract);
         }
-      );
-    });
-    this.update('get_requests').subscribe(records => {
-      this.requests = {...records};
-    });
+      });
     this.update('get_groups').subscribe(records => {
       Object.entries(records).forEach(
         ([group_key, record]) => {
@@ -272,5 +246,51 @@ class Group:
     this.view = 'group';
     this.view_key = key;
     this.posts = this.groups[key]['posts'];
+  }
+
+  inviteFriend() {
+    let contract: Contract = {} as Contract;
+    contract.code = `
+class Friendship:
+
+  def __init__(self):
+    self.walls = Storage('walls')
+
+  def join(self, agent, contract):
+    inviter = '${this.agent}'
+    if len(self.walls) == 0 and agent != inviter:
+      self.walls[inviter] = {'contract': '${this.contract}'}
+      self.walls[agent] = {'contract': contract}
+
+  def get_wall(self, agent):
+    return self.walls[agent]['contract'] if agent in self.walls else None
+`
+    contract.address = this.server;
+    contract.pid = this.agent;
+    contract.name = 'sn_friendship';
+    contract.profile = this.profile;
+    contract.contract = 'sn_friendship.py';
+    contract.protocol = 'BFT';
+    this.contractService.addContract(this.server, this.agent, contract)
+      .subscribe(contract_id => {
+        const link = {'address': this.server, 'agent': this.agent, 'contract': contract_id, 'profile': this.profile};
+        const blob = new Blob([JSON.stringify(link, null, 2)], { type: "application/json",});
+        var url = window.URL.createObjectURL(blob);
+        var anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = "sn_friend_invite.json";
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+      });
+  }
+
+  acceptInvitation(address, agent, contract) {
+    this.contractService.joinContract(this.server, this.agent, address, agent, contract, this.profile)
+      .subscribe(reply => {
+        console.log(reply);
+        const method = { name: 'join',
+                         values: {'agent': this.agent, 'contract': this.contract}} as Method;
+        this.contractService.write(this.server, this.agent, contract, method).subscribe();
+      });
   }
 }

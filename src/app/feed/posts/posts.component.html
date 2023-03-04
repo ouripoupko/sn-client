@@ -4,7 +4,7 @@
 </div>
 <div *ngIf="personService.view == 'friend'">
   <h1>
-    {{personService.friends[personService.view_key]['agent']}}
+    {{personService.getName(personService.friends[personService.view_key]['agent'])}}
   </h1>
 </div>
 <div *ngIf="personService.view == 'group'">

@@ -1,6 +1,6 @@
 <mat-list>
     <mat-list-item class="my-friends-item"
                    *ngFor="let friend of personSvc.friends | keyvalue" (click)="loadFriendPosts(friend.key)">
-      {{friend.value.agent}}
+      {{personSvc.getName(friend.value.agent)}}
     </mat-list-item>
 </mat-list>

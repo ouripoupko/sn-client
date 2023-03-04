@@ -4,12 +4,14 @@
 
 <div class="lists">
     <div class="buttons-wrapper">
-        <button mat-raised-button (click)="openDialog(DialogsEnum.ADD_FRIEND)">Add Friend</button>
+        <button mat-raised-button color="primary" (click)="openInviteFriend()">Invite Friend</button>
+        <input type="file" style="display:none" (change)="openAcceptInvitation($event)" #fileUpload/>
+        <button mat-raised-button color="primary" (click)="fileUpload.click()">Accept Invitation</button>
     </div>
     <app-friends-list></app-friends-list>
     <div class="buttons-wrapper">
-        <button mat-raised-button (click)="openDialog(DialogsEnum.CREATE_GROUP)">Create Group</button>
-        <button mat-raised-button (click)="openDialog(DialogsEnum.JOIN_GROUP)">Join Group</button>
+        <button mat-raised-button color="primary" (click)="openDialog(DialogsEnum.CREATE_GROUP)">Create Group</button>
+        <button mat-raised-button color="primary" (click)="openDialog(DialogsEnum.JOIN_GROUP)">Join Group</button>
     </div>
     <app-group-list></app-group-list>
 </div>

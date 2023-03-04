@@ -30,29 +30,41 @@ export class ContractService {
     return this.http.get<Contract[]>(`${server}ibc/app/${identity}`, {params: params}).pipe(
         tap(_ => console.log('fetched contracts')),
         map((contracts: Contract[]) => {
-          console.log('filter contracts', contracts);
-          let refined: Contract[] = [];
-          for (var contract of contracts) {
-            if(contract.contract == desired) {
-              refined.push(contract);
+          if(desired) {
+            console.log('filter contracts', contracts);
+            let refined: Contract[] = [];
+            for (var contract of contracts) {
+              if(contract.contract == desired) {
+                refined.push(contract);
+              }
             }
+            return refined;
+          } else {
+            return contracts;
           }
-          return refined;
         }),
         catchError(this.handleError<Contract[]>('getContracts', []))
       );
   }
 
-  addContract(server: string, agent: string, name: string, contract: Contract): Observable<Contract> {
-    return this.http.post<Contract>(`${server}ibc/app/${agent}/${name}`, contract, this.httpOptions).pipe(
-      tap((newContract: Contract) => console.log(`added contract with name=${newContract.name}`)),
-      catchError(this.handleError<Contract>('addContract'))
+  addContract(server: string, agent: string, contract: Contract): Observable<Boolean> {
+    console.log('add new contract:', contract);
+    let params = new HttpParams().set('action', 'deploy_contract');
+    return this.http.put<Boolean>(`${server}ibc/app/${agent}`,
+                                    contract,
+                                    {...this.httpOptions, params: params}).pipe(
+      tap(_ => console.log('added contract')),
+      catchError(this.handleError<Boolean>('addContract'))
     );
   }
 
-  connect(server: string, agent: string, address: string, pid: string, name: string): Observable<any> {
-    return this.http.post(`${server}ibc/app/${agent}/${name}`, { address: address, pid: pid }, this.httpOptions).pipe(
-      tap(_ => console.log(`connected to ${address} with contract ${name}`)),
+  joinContract(server: string, agent: string,
+               address: string, other_agent: string, contract_id: string, profile: string): Observable<any> {
+    let params = new HttpParams().set('action', 'join_contract');
+    return this.http.put(`${server}ibc/app/${agent}`,
+                         { address: address, agent: other_agent, contract: contract_id, profile: profile },
+                          {...this.httpOptions, params: params}).pipe(
+      tap(_ => console.log(`connected to ${address} with contract ${contract_id}`)),
       catchError(this.handleError<any>('connect'))
     );
   }

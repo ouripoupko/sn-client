@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs';
-import { AddFriendPopupComponent } from './components/add-friend-popup/add-friend-popup.component';
 import { CreateGroupPopupComponent } from './components/create-group-popup/create-group-popup.component';
 import { JoinGroupPopupComponent } from './components/join-group-popup/join-group-popup.component';
 import { PersonService } from '../../person.service';
@@ -33,10 +32,7 @@ export class ListsComponent implements OnInit, OnDestroy {
 
   openDialog(type: Dialogs) {
     let dialogRef;
-    dialogRef = type == Dialogs.ADD_FRIEND ?
-      this.dialog.open(AddFriendPopupComponent, {
-        width: '50vw'
-      }) : type == Dialogs.CREATE_GROUP ?
+    dialogRef = type == Dialogs.CREATE_GROUP ?
       this.dialog.open(CreateGroupPopupComponent, {
         width: '50vw'
       }) :
@@ -60,5 +56,22 @@ export class ListsComponent implements OnInit, OnDestroy {
 
   openFeed() {
     this.personService.showFeed();
+  }
+
+  openInviteFriend() {
+    this.personService.inviteFriend()
+  }
+
+  openAcceptInvitation(event: any) {
+    if(event.target.files.length > 0)
+    {
+      var reader = new FileReader();
+      reader.onload = () => {
+        var text = reader.result as string;
+        var json = JSON.parse(text);
+        this.personService.acceptInvitation(json['address'], json['agent'], json['contract']);
+      };
+      reader.readAsText(event.target.files[0]);
+    }
   }
 }
