@@ -1,6 +1,13 @@
 <div class="friends-lists-container">
     <mat-tab-group>
-        <mat-tab label="my friends"><app-my-friends></app-my-friends></mat-tab>
-        <mat-tab label="pending requests"><app-friend-requests></app-friend-requests></mat-tab>
+        <mat-tab label="my friends">
+            <mat-list>
+                <mat-list-item class="my-friends-item"
+                               *ngFor="let friend of personSvc.friends | keyvalue"
+                               (click)="friend.value.server.length > 0 ? loadFriendPosts(friend.key) : false">
+                  {{personSvc.getName(friend.value.agent)}}
+                </mat-list-item>
+            </mat-list>
+        </mat-tab>
     </mat-tab-group>
 </div>

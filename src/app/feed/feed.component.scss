@@ -2,11 +2,11 @@
   display: flex;
   app-lists {
     //background: blue;
-    width: 30%;
+    width: 20%;
   }
   app-posts {
     padding: 0 5%;
-    width: 70%;
+    width: 60%;
     max-height: calc(100vh - 60px);
     overflow: auto;
   }

@@ -4,7 +4,7 @@
           <mat-list>
             <mat-list-item class="my-groups-item"
                            *ngFor="let group of personSvc.groups | keyvalue" (click)="loadGroupPosts(group.key)">
-              {{group.value.contract}}
+              {{group.value.name}}
             </mat-list-item>
           </mat-list>
         </mat-tab>

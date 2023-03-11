@@ -18,4 +18,10 @@ export class PostsComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  groupName(key) {
+    if(key in this.personService.groups && 'name' in this.personService.groups[key]) {
+      return this.personService.groups[key]['name'];
+    }
+    return '';
+  }
 }

@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ContractService } from './contract.service';
 import { Contract, Method } from './contract';
+import { map, tap, mergeMap } from 'rxjs/operators';
+import { forkJoin, of, iif } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,11 @@ export class PersonService {
   friends = {};
   requests = {};
   groups = {};
+  group_members = {};
   all_posts = {};
+
+  eventSource: EventSource;
+  targets = {};
 
   constructor(
     private contractService: ContractService
@@ -47,13 +53,14 @@ export class PersonService {
         return '';
       }
     }
-    else {
+    else if(this.friends && agent in this.friends) {
       if('name' in this.friends[agent]) {
         return this.friends[agent]['name'];
-      } else {
-        return agent.slice(0, 4) + '...' + agent.slice(-4);
       }
+    } else if(agent in this.group_members) {
+      return this.group_members[agent];
     }
+    return agent.slice(0, 4) + '...' + agent.slice(-4);
   }
 
   createPost(text): void {
@@ -64,20 +71,7 @@ export class PersonService {
       .subscribe();
   }
 
-  approveFriendship(key) {
-    let request = this.requests[key];
-    this.contractService.joinContract(this.server, this.agent, request.server, request.name, request.contract, '')
-      .subscribe(_ => {
-      const my_method = { name: 'befriend',
-                          values: {'friendship': request.contract,
-                                   'request_key': key}} as Method;
-      this.contractService.write(this.server, this.agent, this.contract, my_method).subscribe();
-    });
-    console.log("approve");
-  }
-
   createGroup(name): void {
-    console.log("will create group " + name);
     let contract: Contract = {} as Contract;
     contract.code = `
 class Group:
@@ -93,21 +87,29 @@ class Group:
 `
     contract.address = this.server;
     contract.pid = this.agent;
+    contract.name = name;
+    contract.profile = this.profile;
+    contract.contract = 'sn_group.py';
+    contract.protocol = 'BFT';
     this.contractService.addContract(this.server, this.agent, contract)
-      .subscribe(_ => {
-      const my_method = { name: 'add_group',
-                          values: {'contract': name}} as Method;
-      this.contractService.write(this.server, this.agent, this.contract, my_method).subscribe();
-    });
+      .subscribe(contract_id => {
+        const link = {'address': this.server, 'agent': this.agent, 'contract': contract_id};
+        const blob = new Blob([JSON.stringify(link, null, 2)], { type: "application/json",});
+        var url = window.URL.createObjectURL(blob);
+        var anchor = document.createElement("a");
+        anchor.href = url;
+        anchor.download = "sn_group_invite.json";
+        anchor.click();
+        window.URL.revokeObjectURL(url);
+        this.listen();
+      });
   }
 
-  joinGroup(his_server, his_name, his_contract): void {
-    this.contractService.joinContract(this.server, this.agent, his_server, his_name, his_contract, '')
+  joinGroup(address, agent, contract) {
+    this.contractService.joinContract(this.server, this.agent, address, agent, contract, this.profile)
       .subscribe(_ => {
-      const my_method = { name: 'add_group',
-                          values: {'contract': his_contract}} as Method;
-      this.contractService.write(this.server, this.agent, this.contract, my_method).subscribe();
-    });
+        this.listen();
+      });
   }
 
   update(method_name) {
@@ -120,11 +122,10 @@ class Group:
     this.contractService.read(this.friends[key].server, this.friends[key].agent,
                               this.friends[key].profile, name_method)
       .subscribe(name => {this.friends[key].name = name});
-    let partner_method = { name: 'get_posts', values: {}, arguments: ['shlomo'] }as Method;
+    let partner_method = { name: 'get_posts', values: {} }as Method;
     this.contractService.read(this.friends[key].server, this.friends[key].agent,
                               this.friends[key].wall_contract, partner_method)
       .subscribe(records => {
-      console.log('posts:', records);
       this.friends[key]['posts'] = {...records}
       if(this.view == 'friend' && this.view_key == key) {
         this.posts = this.friends[key]['posts'];
@@ -134,44 +135,64 @@ class Group:
           this.all_posts[post_key] = record;
         }
       );
-//       console.log('listen', this.friends[key]['server'],
-//                   this.friends[key]['agent'], this.friends[key]['wall_contract'])
-//       this.contractService.listen(this.friends[key]['server'],
-//                   this.friends[key]['agent'], this.friends[key]['wall_contract'])
-//         .addEventListener('message', message => {
-//         console.log('update from friend');
-//         if(message.data=="True") {
-//           console.log('received friend update');
-//           this.updateFriendPosts(key);
-//         }
-//       });
     });
   }
 
-  updateFriend(contract) {
-    console.log('update friend:', contract);
+  readPartners(contract) {
     let partners_method = { name: 'get_partners', values: {}} as Method;
-    this.contractService.read(this.server, this.agent, contract.id, partners_method)
-      .subscribe(partners => {
+    return forkJoin(this.contractService.read(this.server, this.agent, contract, partners_method), of(contract));
+  }
+
+  readWall(partners, contract) {
+    if(partners.length < 2) {
+      return forkJoin(of([]), of({}), of(contract));
+    }
+    else {
       for(let partner of partners) {
         if(partner.agent != this.agent) {
           let wall_method = {name: 'get_wall', values: {'agent': partner.agent}} as Method;
-          this.contractService.read(this.server, this.agent, contract.id, wall_method).subscribe(wall => {
-            let key = partner.agent;
-            console.log('the partner:', partner, partner.address, wall);
-            this.friends[key] = {};
-            this.friends[key]['server'] = partner.address;
-            this.friends[key]['agent'] = partner.agent;
-            this.friends[key]['wall_contract'] = wall;
-            this.friends[key]['profile'] = partner.profile;
-            this.updateFriendPosts(key);
-          });
+          return forkJoin(this.contractService.read(this.server, this.agent, contract, wall_method),
+                          of(partner),
+                          of(contract));
         }
       }
-    });
+    }
+  }
+
+  logPartner(wall, partner, contract) {
+    if(Object.keys(partner).length > 0 && wall) {
+      let key = partner.agent;
+      this.friends[key] = {};
+      this.friends[key]['server'] = partner.address;
+      this.friends[key]['agent'] = partner.agent;
+      this.friends[key]['wall_contract'] = wall;
+      this.friends[key]['profile'] = partner.profile;
+      this.updateFriendPosts(key);
+      if(!(key in this.targets)) {
+        this.targets[key] = [];
+      }
+      this.targets[key].push(this.friends[key]['wall_contract']);
+    } else {
+      this.targets[this.agent].push(contract);
+      this.friends[contract] = {};
+      this.friends[contract].agent = contract;
+      this.friends[contract].server = '';
+    }
+    return of(42);
   }
 
   updateGroup(key) {
+    let partners_method = { name: 'get_partners', values: {}} as Method;
+    this.contractService.read(this.server, this.agent, key, partners_method)
+      .subscribe(partners => {
+      for(let partner of partners) {
+        let name_method = { name: 'get_value', values: {'key': 'first_name'}}as Method;
+        this.contractService.read(partner.address, partner.agent, partner.profile, name_method)
+          .subscribe(name => {
+          this.group_members[partner.agent] = name;
+          });
+      }
+    });
     let method = { name: 'get_posts', values: {}} as Method;
     this.contractService.read(this.server, this.agent, this.groups[key].contract, method)
       .subscribe(records => {
@@ -188,13 +209,15 @@ class Group:
   }
 
   getUpdates() {
+    this.targets = {};
+    this.targets[this.agent] = [this.contract];
     this.update('get_partners').subscribe(partners => {
       for(let partner of partners) {
         if(partner.agent == this.agent) {
           this.profile = partner.profile;
           const method = { name: 'get_value', values: {'key': 'first_name'}} as Method;
           this.contractService.read(this.server, this.agent, this.profile, method)
-            .subscribe(value => {console.log('read name', value); this.name = value;});
+            .subscribe(value => {this.name = value;});
         }
       }
     });
@@ -205,29 +228,30 @@ class Group:
         }
       );
     });
-    this.contractService.getContracts(this.server, this.agent, 'sn_friendship.py')
-      .subscribe((contracts:Contract[]) => {
+    this.friends = {};
+    let friends$ = this.contractService.getContracts(this.server, this.agent, 'sn_friendship.py').pipe(
+      mergeMap((contracts:Contract[]) => iif(() => contracts.length > 0,
+        forkJoin(Array.from(contracts, contract => this.readPartners(contract.id))), of([]))),
+      mergeMap(x => iif(() => x.length > 0,
+        forkJoin(Array.from(x, ([partners, contract]) => this.readWall(partners, contract))), of([]))),
+      mergeMap(x => iif(() => x.length > 0,
+        forkJoin(Array.from(x, ([wall, partner, contract]) => this.logPartner(wall, partner, contract))), of([])))
+    );
+
+    this.groups = {};
+    let groups$ = this.contractService.getContracts(this.server, this.agent, 'sn_group.py').pipe(
+      map((contracts:Contract[]) => {
         for(let contract of contracts) {
-          this.updateFriend(contract);
-        }
-      });
-    this.update('get_groups').subscribe(records => {
-      Object.entries(records).forEach(
-        ([group_key, record]) => {
-          if(!(group_key in this.groups)) {
-            this.groups[group_key] = record;
-//             this.contractService.listen(this.server, this.agent, record['contract'])
-//               .addEventListener('message', message => {
-//               console.log('update from group');
-//               if(message.data=="True") {
-//                 this.updateGroup(group_key);
-//               }
-//             });
+          if(!(contract.id in this.groups)) {
+            this.groups[contract.id] = {'contract': contract.id};
           }
-          this.updateGroup(group_key);
+          this.groups[contract.id]['name'] = contract.name;
+          this.targets[this.agent].push(contract.id);
+          this.updateGroup(contract.id);
         }
-      );
-    });
+        return 17;
+      }));
+    return forkJoin(friends$, groups$);
   }
 
   showFeed() {
@@ -273,7 +297,7 @@ class Friendship:
     contract.protocol = 'BFT';
     this.contractService.addContract(this.server, this.agent, contract)
       .subscribe(contract_id => {
-        const link = {'address': this.server, 'agent': this.agent, 'contract': contract_id, 'profile': this.profile};
+        const link = {'address': this.server, 'agent': this.agent, 'contract': contract_id};
         const blob = new Blob([JSON.stringify(link, null, 2)], { type: "application/json",});
         var url = window.URL.createObjectURL(blob);
         var anchor = document.createElement("a");
@@ -281,16 +305,32 @@ class Friendship:
         anchor.download = "sn_friend_invite.json";
         anchor.click();
         window.URL.revokeObjectURL(url);
+        this.listen();
       });
   }
 
   acceptInvitation(address, agent, contract) {
     this.contractService.joinContract(this.server, this.agent, address, agent, contract, this.profile)
       .subscribe(reply => {
-        console.log(reply);
         const method = { name: 'join',
                          values: {'agent': this.agent, 'contract': this.contract}} as Method;
-        this.contractService.write(this.server, this.agent, contract, method).subscribe();
+        this.contractService.write(this.server, this.agent, contract, method).subscribe(_ => {
+          this.listen();
+        });
       });
+  }
+
+  listen() {
+    this.getUpdates().subscribe(x => {
+      if(this.eventSource) {
+        this.eventSource.close();
+      }
+      this.eventSource = this.contractService.listen(this.server, this.targets);
+      this.eventSource.addEventListener('message', message => {
+        if(message.data) {
+          this.listen();
+        }
+      });
+    });
   }
 }

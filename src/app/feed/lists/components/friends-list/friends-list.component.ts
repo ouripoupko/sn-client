@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PersonService } from '../../../../person.service'
 
 @Component({
   selector: 'app-friends-list',
@@ -7,9 +8,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class FriendsListComponent implements OnInit {
 
-  constructor() { }
+  constructor(public personSvc: PersonService) { }
 
   ngOnInit(): void {
   }
 
+  loadFriendPosts(key) {
+    this.personSvc.showFriend(key);
+  }
 }

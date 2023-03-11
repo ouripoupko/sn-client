@@ -27,8 +27,6 @@ import { DisplayComponent } from './feed/posts/display/display.component';
 import { PopupComponent } from './feed/posts/create/popup/popup.component';
 import { FriendsListComponent } from './feed/lists/components/friends-list/friends-list.component';
 import { GroupListComponent } from './feed/lists/components/group-list/group-list.component';
-import { MyFriendsComponent } from './feed/lists/components/friends-list/components/my-friends/my-friends.component';
-import { FriendRequestsComponent } from './feed/lists/components/friends-list/components/friend-requests/friend-requests.component';
 import { JoinGroupPopupComponent } from './feed/lists/components/join-group-popup/join-group-popup.component';
 import { CreateGroupPopupComponent } from './feed/lists/components/create-group-popup/create-group-popup.component';
 
@@ -45,8 +43,6 @@ import { CreateGroupPopupComponent } from './feed/lists/components/create-group-
     PopupComponent,
     FriendsListComponent,
     GroupListComponent,
-    MyFriendsComponent,
-    FriendRequestsComponent,
     JoinGroupPopupComponent,
     CreateGroupPopupComponent
   ],

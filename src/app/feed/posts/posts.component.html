@@ -9,7 +9,7 @@
 </div>
 <div *ngIf="personService.view == 'group'">
   <h1>
-    {{personService.groups[personService.view_key]['contract']}}
+    {{groupName(personService.view_key)}}
   </h1>
   <app-create></app-create>
 </div>

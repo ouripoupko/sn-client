@@ -30,14 +30,9 @@ export class ListsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
   }
 
-  openDialog(type: Dialogs) {
-    let dialogRef;
-    dialogRef = type == Dialogs.CREATE_GROUP ?
-      this.dialog.open(CreateGroupPopupComponent, {
+  openCreateGroup() {
+    let dialogRef = this.dialog.open(CreateGroupPopupComponent, {
         width: '50vw'
-      }) :
-      this.dialog.open(JoinGroupPopupComponent, {
-        width: '70vw'
       });
 
     this.subs.push(
@@ -48,6 +43,19 @@ export class ListsComponent implements OnInit, OnDestroy {
         }
       })
     );
+  }
+
+  openJoinGroup(event: any) {
+    if(event.target.files.length > 0)
+    {
+      var reader = new FileReader();
+      reader.onload = () => {
+        var text = reader.result as string;
+        var json = JSON.parse(text);
+        this.personService.joinGroup(json['address'], json['agent'], json['contract']);
+      };
+      reader.readAsText(event.target.files[0]);
+    }
   }
 
   ngOnDestroy(): void {
