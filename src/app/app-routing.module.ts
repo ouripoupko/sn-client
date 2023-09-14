@@ -4,8 +4,8 @@ import { FeedComponent } from './feed/feed.component';
 import { HomepageComponent } from './homepage/homepage.component';
 
 const routes: Routes = [
-  { path: '', component: HomepageComponent},
-  { path: ':server/:agent/:contract', component: FeedComponent }
+  { path: 'login', component: HomepageComponent},
+  { path: '', component: FeedComponent }
 ];
 
 

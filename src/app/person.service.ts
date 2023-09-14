@@ -118,10 +118,12 @@ class Group:
   }
 
   updateFriendPosts(key) {
-    let name_method = { name: 'get_value', values: {'key': 'first_name'}}as Method;
-    this.contractService.read(this.friends[key].server, this.friends[key].agent,
-                              this.friends[key].profile, name_method)
-      .subscribe(name => {this.friends[key].name = name});
+    if(this.friends[key].profile) {
+      let name_method = { name: 'get_value', values: {'key': 'first_name'}}as Method;
+      this.contractService.read(this.friends[key].server, this.friends[key].agent,
+                                this.friends[key].profile, name_method)
+        .subscribe(name => {this.friends[key].name = name});
+    }
     let partner_method = { name: 'get_posts', values: {} }as Method;
     this.contractService.read(this.friends[key].server, this.friends[key].agent,
                               this.friends[key].wall_contract, partner_method)
@@ -186,11 +188,13 @@ class Group:
     this.contractService.read(this.server, this.agent, key, partners_method)
       .subscribe(partners => {
       for(let partner of partners) {
-        let name_method = { name: 'get_value', values: {'key': 'first_name'}}as Method;
-        this.contractService.read(partner.address, partner.agent, partner.profile, name_method)
-          .subscribe(name => {
-          this.group_members[partner.agent] = name;
-          });
+        if(partner.profile) {
+          let name_method = { name: 'get_value', values: {'key': 'first_name'}}as Method;
+          this.contractService.read(partner.address, partner.agent, partner.profile, name_method)
+            .subscribe(name => {
+            this.group_members[partner.agent] = name;
+            });
+        }
       }
     });
     let method = { name: 'get_posts', values: {}} as Method;
@@ -215,9 +219,11 @@ class Group:
       for(let partner of partners) {
         if(partner.agent == this.agent) {
           this.profile = partner.profile;
-          const method = { name: 'get_value', values: {'key': 'first_name'}} as Method;
-          this.contractService.read(this.server, this.agent, this.profile, method)
-            .subscribe(value => {this.name = value;});
+          if(this.profile) {
+            const method = { name: 'get_value', values: {'key': 'first_name'}} as Method;
+            this.contractService.read(this.server, this.agent, this.profile, method)
+              .subscribe(value => {this.name = value;});
+          }
         }
       }
     });
