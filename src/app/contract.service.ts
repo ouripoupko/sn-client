@@ -19,7 +19,7 @@ export class ContractService {
     private http: HttpClient) { }
 
   getIdentities(server: string): Observable<string[]> {
-    return this.http.get<string[]>(`${server}ibc/app`).pipe(
+    return this.http.get<string[]>(`${server}/ibc/app`).pipe(
         tap(_ => console.log('fetched identities')),
         catchError(this.handleError<string[]>('getIdentities', [])),
         first()
@@ -28,7 +28,7 @@ export class ContractService {
 
   getContracts(server: string, identity: string, desired: string): Observable<Contract[]> {
     let params = new HttpParams().set('action', 'get_contracts');
-    return this.http.get<Contract[]>(`${server}ibc/app/${identity}`, {params: params}).pipe(
+    return this.http.get<Contract[]>(`${server}/ibc/app/${identity}`, {params: params}).pipe(
         tap(_ => console.log('fetched contracts')),
         map((contracts: Contract[]) => {
           if(desired) {
@@ -50,7 +50,7 @@ export class ContractService {
 
   addContract(server: string, agent: string, contract: Contract): Observable<Boolean> {
     let params = new HttpParams().set('action', 'deploy_contract');
-    return this.http.put<Boolean>(`${server}ibc/app/${agent}`,
+    return this.http.put<Boolean>(`${server}/ibc/app/${agent}`,
                                     contract,
                                     {...this.httpOptions, params: params}).pipe(
       tap(_ => console.log('added contract')),
@@ -62,7 +62,7 @@ export class ContractService {
   joinContract(server: string, agent: string,
                address: string, other_agent: string, contract_id: string, profile: string): Observable<any> {
     let params = new HttpParams().set('action', 'join_contract');
-    return this.http.put(`${server}ibc/app/${agent}`,
+    return this.http.put(`${server}/ibc/app/${agent}`,
                          { address: address, agent: other_agent, contract: contract_id, profile: profile },
                           {...this.httpOptions, params: params}).pipe(
       tap(_ => console.log('joined contract')),
@@ -81,11 +81,11 @@ export class ContractService {
         parameters += `agent=${agent}&contract=${contract}`
       }
     }
-    return new EventSource(`${server}stream?${parameters}`);
+    return new EventSource(`${server}/stream?${parameters}`);
   }
 
   write(server: string, identity: string, contract: string, method: Method): Observable<any> {
-    const url = `${server}ibc/app/${identity}/${contract}/${method.name}`;
+    const url = `${server}/ibc/app/${identity}/${contract}/${method.name}`;
     let params = new HttpParams().set('action', 'contract_write');
     return this.http.post<any>(url, method, {...this.httpOptions, params: params}).pipe(
       tap(_ => console.log('wrote something')),
@@ -95,7 +95,7 @@ export class ContractService {
   }
 
   read(server: string, identity: string, contract: string, method: Method): Observable<any> {
-    const url = `${server}ibc/app/${identity}/${contract}/${method.name}`;
+    const url = `${server}/ibc/app/${identity}/${contract}/${method.name}`;
     let params = new HttpParams().set('action', 'contract_read');
     return this.http.post<any>(url, method, {...this.httpOptions, params: params}).pipe(
       tap(_ => console.log('read something')),
